@@ -56,7 +56,7 @@ let roleUpgrader = {
      */
     _say: function(creep) {
         // we speak every 10 ticks
-		if (Game.ticksToLive % 10) return;
+		if (creep.ticksToLive % 10) return;
 
         switch (creep.memory.state) {
             case STATE.Sourcing:

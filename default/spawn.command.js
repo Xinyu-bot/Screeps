@@ -35,7 +35,6 @@ let spawnCommand = {
      */
     _spawnCreep: function (spawn, screepsMap) {
         let energy = spawn.room.energyAvailable;
-        console.log("energy: " + energy);
         if (energy < MinEnergyForSpawn) return;
         
         let harvesters = screepsMap.get(ROLE.HARVESTER);

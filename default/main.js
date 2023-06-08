@@ -34,10 +34,7 @@ module.exports.loop = function () {
     map.set(ROLE.UPGRADER, upgraders);
     map.set(ROLE.BUILDER, builders);
     spawnCommand.spawn(map);
-
-    SourceMap.forEach(
-        (value, key) => console.log(key + " " + value)
-    );
+    
 }
 
 

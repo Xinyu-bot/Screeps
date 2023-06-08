@@ -43,6 +43,7 @@ let roleBuilder = {
 			
 			case STATE.Building, STATE.Fixing:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
+					creep.memory.target = null; // clear target
 					creep.memory.state = STATE.Sourcing;
 				}
 				break;
@@ -61,7 +62,7 @@ let roleBuilder = {
 	 */
     _say: function(creep) {
 		// we speak every 10 ticks
-		if (Game.ticksToLive % 10) return;
+		if (creep.ticksToLive % 10) return;
 		
 		switch (creep.memory.state) {
 			case STATE.Sourcing:
@@ -97,16 +98,43 @@ let roleBuilder = {
 				break;
 
 			case STATE.Building:
-				const target = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
+				if (creep.memory.target) {
+					let target = Game.getObjectById(creep.memory.target);
+					// if the target is done, clear it
+					if (target == null || target.progress == target.progressTotal) {
+						creep.memory.target = null;
+					} else {
+						if(creep.build(target) == ERR_NOT_IN_RANGE) {
+							creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+						}
+						return;
+					}
+				}
 
-				if(target) {
-					if(creep.build(target) == ERR_NOT_IN_RANGE) {
-						creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+				let buildTarget = creep.pos.findClosestByRange(FIND_MY_CONSTRUCTION_SITES);
+
+				if(buildTarget) {
+					creep.memory.target = buildTarget.id;
+					if(creep.build(buildTarget) == ERR_NOT_IN_RANGE) {
+						creep.moveTo(buildTarget, {visualizePathStyle: {stroke: '#ffffff'}});
 					}
 				}
 				break;
 
 			case STATE.Fixing:
+				if (creep.memory.target) {
+					let target = Game.getObjectById(creep.memory.target);
+					// if the target is done, clear it
+					if (target == null || target.hits == target.hitsMax) {
+						creep.memory.target = null;
+					} else {
+						if(creep.repair(target) == ERR_NOT_IN_RANGE) {
+							creep.moveTo(target);
+						}
+						return;
+					}
+				}
+
 				let fixTargets = creep.room.find(FIND_STRUCTURES, {
 					filter: object => object.hits < object.hitsMax
 				});
@@ -114,6 +142,7 @@ let roleBuilder = {
 				fixTargets.sort((a,b) => a.hits - b.hits);
 
 				if(fixTargets.length > 0) {
+					creep.memory.target = fixTargets[0].id;
 					if(creep.repair(fixTargets[0]) == ERR_NOT_IN_RANGE) {
 						creep.moveTo(fixTargets[0]);
 					}
