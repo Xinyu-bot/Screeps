@@ -41,7 +41,8 @@ let roleBuilder = {
 				}
 				break;
 			
-			case STATE.Building, STATE.Fixing:
+			case STATE.Fixing:
+			case STATE.Building:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
 					creep.memory.target = null; // clear target
 					creep.memory.state = STATE.Sourcing;

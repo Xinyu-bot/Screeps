@@ -47,7 +47,7 @@ let spawnCommand = {
         else if (upgraders.length < 4) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 4) {
+        else if (builders.length < 5) {
             spawnCommand._spawnBuilder(spawn);
         }
     },
