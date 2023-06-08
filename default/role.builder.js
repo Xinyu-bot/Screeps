@@ -6,7 +6,7 @@ const STATE = {
 	Fixing: 2,
 	Building: 3, 
 }
-const MinFixers = 2;
+const MinFixers = 1;
 
 let roleBuilder = {
 
@@ -61,7 +61,7 @@ let roleBuilder = {
 	 */
     _say: function(creep) {
 		// we speak every 10 ticks
-		if (Game.time % 10) return;
+		if (Game.ticksToLive % 10) return;
 		
 		switch (creep.memory.state) {
 			case STATE.Sourcing:

@@ -40,7 +40,7 @@ let roleHarvester = {
 			
 			case STATE.Delivering:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
-					creep.memory.state = STATE.Delivering;
+					creep.memory.state = STATE.Sourcing;
 				}
 				break;
 
@@ -57,11 +57,11 @@ let roleHarvester = {
 	 */    
     _say: function(creep) {
         // we speak every 10 ticks
-		if (Game.time % 10) return;
+		if (creep.ticksToLive % 10) return;
 
         switch (creep.memory.state) {
             case STATE.Sourcing:
-                creep.say(ROLE.SAY.SOURCE);
+                creep.say(ROLE.SAY.HARVEST);
                 break;
 
             case STATE.Delivering:
@@ -88,16 +88,16 @@ let roleHarvester = {
                 break;
 
             case STATE.Delivering:
-                let targets = creep.room.find(FIND_STRUCTURES, {
+                let target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
                             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     }
                 });
                 
-                if(targets.length > 0) {
-                    if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                if(target) {
+                    if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                     }
                 }
                 break;
