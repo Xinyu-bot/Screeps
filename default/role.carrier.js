@@ -3,7 +3,7 @@ const roleUtils = require("./role.utils");
 
 const STATE = {
 	Sourcing: 1,
-    Delivering: 2,
+    Storing: 2,
 }
 
 
@@ -28,12 +28,12 @@ let roleCarrier = {
 			case STATE.Sourcing:
 				if (creep.store.getFreeCapacity() == 0) {
                     creep.memory.target = null; // clear target
-					creep.memory.state = STATE.Delivering;
+					creep.memory.state = STATE.Storing;
                     roleCarrier._say(creep);  // shout to the GUI
 				}
 				break;
 			
-			case STATE.Delivering:
+			case STATE.Storing:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
                     creep.memory.target = null; // clear target
 					creep.memory.state = STATE.Sourcing;
@@ -57,7 +57,7 @@ let roleCarrier = {
                 creep.say(ROLE.SAY.SOURCE);
                 break;
 
-            case STATE.Delivering:
+            case STATE.Storing:
                 creep.say(ROLE.SAY.DELIVER);
                 break;
             
@@ -95,10 +95,10 @@ let roleCarrier = {
                 break;
 
             // find a container near a controller, and transfer energy to it
-            case STATE.Delivering:
+            case STATE.Storing:
                 if (creep.memory.target) {
                     let target = Game.getObjectById(creep.memory.target);
-                    if (target && target.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
+                    if (target && target.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                         creep.memory.target = null;
                     } else {
                         if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -108,6 +108,34 @@ let roleCarrier = {
                     }
                 }
 
+                // go to storage
+                const spawn = Game.spawns[creep.memory.spawn]; 
+                const targetStorage = spawn.room.storage;
+                if (targetStorage) {
+                    creep.memory.target = targetStorage.id;
+                    if(creep.transfer(targetStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targetStorage, {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                    break;
+                }
+
+                // go to tower
+                const towers = spawn.room.find(FIND_MY_STRUCTURES, {
+                    filter: (structure) => { 
+                        return structure.structureType == STRUCTURE_TOWER; 
+                    }
+                });
+                if (towers.length > 0) {
+                    // find the tower with lowest energy charged
+                    towers.sort((a, b) => b.store.getFreeCapacity() - a.store.getFreeCapacity())
+                    creep.memory.target = towers[0].id;
+                    if(creep.transfer(towers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                    break;
+                }
+
+                // go to container
                 const targetContainer = roleUtils.findControllerContainer(creep);
                 if (targetContainer) {
                     creep.memory.target = targetContainer.id;
@@ -117,18 +145,12 @@ let roleCarrier = {
                     break;
                 }
 
-                // if we don't have a container near the controller, we need to move to spawn
-                const spawn = creep.room.find(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return structure.structureType == STRUCTURE_SPAWN;
-                    }
-                });
-                if (spawn.length > 0) {
-                    creep.memory.target = spawn[0].id;
-                    if(creep.transfer(spawn[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(spawn[0], {visualizePathStyle: {stroke: '#ffaa00'}});
-                    }
+                // go to spawn                
+                creep.memory.target = spawn.id;
+                if(creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
+                
 
                 break;
 

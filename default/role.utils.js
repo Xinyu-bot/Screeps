@@ -19,16 +19,30 @@ let roleUtils = {
         let sourceId = "";
         // if we have more than one source, we may need to pick one
         if (sources.length > 1) {
+            
+            // fix the map
+            if (sourcesMap.size != sources.length) {
+                if (sourcesMap.has(sources[0].id)) {
+                    sourcesMap.set(sources[1].id, 0);
+                } else {
+                    sourcesMap.set(sources[0].id, 0);
+                }
+            }
+
             // pick the source with the least number of harvesters
-            if (sourcesMap.get(sources[0].id) < sourcesMap.get(sources[1].id)) {
+            let source_0 = sourcesMap.get(sources[0].id) ? sourcesMap.get(sources[0].id) : 0;
+            let source_1 = sourcesMap.get(sources[1].id) ? sourcesMap.get(sources[1].id) : 0;
+            if (source_0 <= source_1) {
                 sourceId = sources[0].id;
+                sourcesMap.set(sourceId, source_0 + 1);
             } else {
                 sourceId = sources[1].id;
+                sourcesMap.set(sourceId, source_1 + 1);
             }
 
             // update the map
-            sourcesMap.set(sourceId, sourcesMap.get(sourceId) + 1);
             creep.memory.sourceId = sourceId;
+
         } else {
             // if we only have one source, use it directly
             sourceId = sources[0].id;
@@ -75,7 +89,7 @@ let roleUtils = {
     findControllerContainer: function(creep) {
         let containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(creep.room.controller, 3);
+                return structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(creep.room.controller, 3) && structure.store.getFreeCapacity() > 0;
             }
         });
 

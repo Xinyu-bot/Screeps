@@ -11,6 +11,13 @@ const ModuleCost = {
     [CLAIM]: 600,
     [TOUGH]: 10,
 }
+const CreepsCountPreStoragePhase = {
+    HARVESTER: 3,
+    UPGRADER: 6, 
+    BUILDER: 5,
+    CARRIER: 2,
+}
+
 
 let spawnCommand = {
     
@@ -56,10 +63,10 @@ let spawnCommand = {
         if (harvesters.length < 3) {
             spawnCommand._spawnHarvester(spawn);
         }
-        else if (upgraders.length < 6) {
+        else if (upgraders.length < 4) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 5) {
+        else if (builders.length < 3) {
             spawnCommand._spawnBuilder(spawn);
         }
         else if (carrier.length < 2) {
