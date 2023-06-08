@@ -11,9 +11,7 @@ const MinFixers = 1;
 let roleBuilder = {
 
     /** 
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 * */
     run: function(creep) {
 		// check state
@@ -24,9 +22,7 @@ let roleBuilder = {
     }, 
 
 	/**
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */ 
 	_state: function(creep) {
 		switch (creep.memory.state) {
@@ -69,14 +65,9 @@ let roleBuilder = {
 
 
     /** 
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */
     _say: function(creep) {
-		// we speak every 10 ticks
-		if (creep.ticksToLive % 10) return;
-		
 		switch (creep.memory.state) {
 			case STATE.Sourcing:
 				creep.say(ROLE.SAY.SOURCE);
@@ -97,9 +88,7 @@ let roleBuilder = {
     },
 
     /** 
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */
     _operate: function(creep) {
 		switch (creep.memory.state) {

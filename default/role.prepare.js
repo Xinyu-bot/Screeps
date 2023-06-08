@@ -3,19 +3,14 @@ var rolePrepare = {
     SourceMap: new Map(),
 
     /** 
-     * 
      * @param {} creeps
-     * 
-     * 
      */
     prepare: function(creeps) {
         rolePrepare._prepareSourceMap(creeps);
     }, 
 
     /**
-     * 
      * @ param {} creeps
-     * 
      */
     _prepareSourceMap: function(creeps) {
         if (this.SourceMap.size > 0) this.SourceMap.clear();

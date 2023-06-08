@@ -10,9 +10,7 @@ const STATE = {
 let roleHarvester = {
 
     /** 
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */    
     run: function(creep) {
         // check state
@@ -23,9 +21,7 @@ let roleHarvester = {
     }, 
 
 	/**
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */ 
 	_state: function(creep) {
 		switch (creep.memory.state) {
@@ -51,14 +47,9 @@ let roleHarvester = {
 	},
 
     /** 
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */    
     _say: function(creep) {
-        // we speak every 10 ticks
-		if (creep.ticksToLive % 10) return;
-
         switch (creep.memory.state) {
             case STATE.Sourcing:
                 creep.say(ROLE.SAY.HARVEST);
@@ -74,30 +65,28 @@ let roleHarvester = {
     },
 
     /** 
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */    
     _operate: function(creep) {
         switch (creep.memory.state) {
             case STATE.Sourcing:
                 let source = roleUtils.findSource(creep);
-                if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
+                if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
                 }
                 break;
 
             case STATE.Delivering:
-                // find an extension or spawn
+                // find an extension
                 let target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
+                        return structure.structureType == STRUCTURE_EXTENSION &&
                             structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                     }
                 });
 
                 // if we can't find an extension or spawn, try to find a container
-                if(!target) {
+                if (!target) {
                     target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {
                             return (structure.structureType == STRUCTURE_CONTAINER) && 
@@ -108,12 +97,23 @@ let roleHarvester = {
                     });
                 }
 
+                // if we can't find a container, try to find a spawn
+                if (!target) {
+                    target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType == STRUCTURE_SPAWN) &&
+                                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        }
+                    });
+                }
+
                 // if we find a target, transfer energy to it
                 if (target) {
                     if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
                     }
                 }
+                
                 break;
 
             default:

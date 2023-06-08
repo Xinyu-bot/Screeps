@@ -40,6 +40,13 @@ let spawnCommand = {
         let harvesters = screepsMap.get(ROLE.HARVESTER);
         let upgraders = screepsMap.get(ROLE.UPGRADER);
         let builders = screepsMap.get(ROLE.BUILDER);
+        let carrier = screepsMap.get(ROLE.CARRIER);
+
+        // filter out the creep that does not belong to this spawn
+        harvesters = _.filter(harvesters, (creep) => creep.memory.spawn == spawn.name);
+        upgraders = _.filter(upgraders, (creep) => creep.memory.spawn == spawn.name);
+        builders = _.filter(builders, (creep) => creep.memory.spawn == spawn.name);
+        carrier = _.filter(carrier, (creep) => creep.memory.spawn == spawn.name);
 
         if (harvesters.length < 3) {
             spawnCommand._spawnHarvester(spawn);
@@ -47,8 +54,11 @@ let spawnCommand = {
         else if (upgraders.length < 8) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 5) {
+        else if (builders.length < 7) {
             spawnCommand._spawnBuilder(spawn);
+        }
+        else if (carrier.length < 2) {
+            spawnCommand._spawnCarrier(spawn);
         }
     },
 
@@ -126,6 +136,34 @@ let spawnCommand = {
 
         let _name = ROLE.BUILDER + Game.time;
         let role = ROLE.BUILDER;
+        let memory = {
+            role: role,
+            spawn: spawn.name,
+        };
+
+        if (body.length >= 3) {
+            _name = spawn.spawnCreep(body, _name, { memory: memory });
+        }
+    },
+
+    /**
+     * @param {StructureSpawn} spawn 
+     * 
+     * Spawn carrier
+     */
+    _spawnCarrier: function (spawn) {
+        let energy = spawn.room.energyAvailable;
+        let baseBody = [CARRY, MOVE];
+        let baseCost = 0;
+        baseBody.forEach((part) => baseCost += ModuleCost[part])
+        let times = Math.floor(energy / baseCost);
+        let body = [];
+        for (let i = 0; i < times; i++) {
+            body = body.concat(baseBody);
+        }
+
+        let _name = ROLE.CARRIER + Game.time;
+        let role = ROLE.CARRIER;
         let memory = {
             role: role,
             spawn: spawn.name,

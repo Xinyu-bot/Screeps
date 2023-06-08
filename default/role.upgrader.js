@@ -9,9 +9,7 @@ const STATE = {
 let roleUpgrader = {
 
     /** 
-     * 
      * @param {Creep} creep 
-     * 
      */
     run: function(creep) {
         // check state
@@ -22,9 +20,7 @@ let roleUpgrader = {
     }, 
 
 	/**
-	 * 
 	 * @param {Creep} creep 
-	 * 
 	 */ 
 	_state: function(creep) {
 		switch (creep.memory.state) {
@@ -50,14 +46,9 @@ let roleUpgrader = {
 	},
 
     /** 
-     * 
      * @param {Creep} creep 
-     * 
      */
     _say: function(creep) {
-        // we speak every 10 ticks
-		if (creep.ticksToLive % 10) return;
-
         switch (creep.memory.state) {
             case STATE.Sourcing:
                 creep.say(ROLE.SAY.SOURCE);
@@ -74,9 +65,7 @@ let roleUpgrader = {
     },
 
     /** 
-     * 
      * @param {Creep} creep 
-     * 
      */
     _operate: function(creep) {
         switch (creep.memory.state) {
