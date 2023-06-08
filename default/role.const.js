@@ -5,9 +5,12 @@ const ROLE = {
 
     SAY: {
         HARVEST: '🌾 harvest',
+        SOURCE: '🔄 source',
         BUILD: '🚧 build',
         UPGRADE: '⚡ upgrade',
         DELIVER: '🚚 deliver',
+        FIX: '🔧 fix',
+        WONDER: '🤔 wonder',
     },
 }
 
