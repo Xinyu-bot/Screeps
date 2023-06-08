@@ -55,8 +55,8 @@ let roleUtils = {
             }
         });
 
-        // sort by used capacity, so we can find the one with the most used capacity
-        containers.sort((a, b) => a.store.getUsedCapacity(RESOURCE_ENERGY) - b.store.getUsedCapacity(RESOURCE_ENERGY)); 
+        // sort by used capacity in descending order, so we can find the one with the most used capacity
+        containers.sort((a, b) => b.store.getUsedCapacity(RESOURCE_ENERGY) - a.store.getUsedCapacity(RESOURCE_ENERGY)); 
 
         if (containers.length > 0) {
             return containers[0];
@@ -79,8 +79,8 @@ let roleUtils = {
             }
         });
 
-        // sort by free capacity, so we can find the one with the most free capacity
-        containers.sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY)); 
+        // sort by free capacity in descending order, so we can find the one with the most free capacity
+        containers.sort((a, b) => b.store.getFreeCapacity(RESOURCE_ENERGY) - a.store.getFreeCapacity(RESOURCE_ENERGY)); 
 
         if (containers.length > 0) {
             return containers[0];

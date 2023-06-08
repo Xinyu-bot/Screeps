@@ -48,13 +48,18 @@ let spawnCommand = {
         builders = _.filter(builders, (creep) => creep.memory.spawn == spawn.name);
         carrier = _.filter(carrier, (creep) => creep.memory.spawn == spawn.name);
 
+        // log the number of creeps for each role every 5 ticks
+        if (Game.time % 5 == 0) {
+            console.log("Spawn: " + spawn.name + ", harvesters: " + harvesters.length + ", upgraders: " + upgraders.length + ", builders: " + builders.length + ", carriers: " + carrier.length);
+        }
+
         if (harvesters.length < 3) {
             spawnCommand._spawnHarvester(spawn);
         }
-        else if (upgraders.length < 8) {
+        else if (upgraders.length < 6) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 7) {
+        else if (builders.length < 5) {
             spawnCommand._spawnBuilder(spawn);
         }
         else if (carrier.length < 2) {
@@ -169,7 +174,7 @@ let spawnCommand = {
             spawn: spawn.name,
         };
 
-        if (body.length >= 3) {
+        if (body.length >= 2) {
             _name = spawn.spawnCreep(body, _name, { memory: memory });
         }
     },
