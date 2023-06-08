@@ -44,7 +44,7 @@ let spawnCommand = {
         if (harvesters.length < 3) {
             spawnCommand._spawnHarvester(spawn);
         }
-        else if (upgraders.length < 4) {
+        else if (upgraders.length < 8) {
             spawnCommand._spawnUpgrader(spawn);            
         }
         else if (builders.length < 5) {

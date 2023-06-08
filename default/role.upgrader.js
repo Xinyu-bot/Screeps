@@ -17,9 +17,6 @@ let roleUpgrader = {
         // check state
         roleUpgrader._state(creep);
 
-        // shout to the GUI
-        roleUpgrader._say(creep);
-
 	    // operate
         roleUpgrader._operate(creep);
     }, 
@@ -34,18 +31,21 @@ let roleUpgrader = {
 			case STATE.Sourcing:
 				if (creep.store.getFreeCapacity() == 0) {
 					creep.memory.state = STATE.Upgrading;
+                    roleUpgrader._say(creep); // shout to the GUI
 				}
 				break;
 			
 			case STATE.Upgrading:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
 					creep.memory.state = STATE.Sourcing;
+                    roleUpgrader._say(creep); // shout to the GUI
 				}
 				break;
 
 			// if we don't have a state, set it to Sourcing
 			default:
 				creep.memory.state = STATE.Sourcing;
+                roleUpgrader._say(creep); // shout to the GUI
 		}
 	},
 

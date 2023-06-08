@@ -19,9 +19,6 @@ let roleBuilder = {
 		// check state
 		roleBuilder._state(creep);
 
-        // shout to the GUI
-        roleBuilder._say(creep);
-
 	    // operate
         roleBuilder._operate(creep);
     }, 
@@ -37,21 +34,36 @@ let roleBuilder = {
 				if (creep.store.getFreeCapacity() == 0) {
 					// if we have less than 2 fixers, we should fix first
 					let fixers = _.filter(Game.creeps, (creep) => creep.memory.role == ROLE.BUILDER && creep.memory.state == STATE.Fixing);
-					creep.memory.state = fixers.length < MinFixers ? STATE.Fixing : STATE.Building;
+					let needFix = creep.room.find(FIND_STRUCTURES, {
+						filter: object => object.hits < object.hitsMax
+					}).length > 0;
+					creep.memory.state = fixers.length < MinFixers && needFix ? STATE.Fixing : STATE.Building;
+					roleBuilder._say(creep); // shout to the GUI
 				}
 				break;
 			
 			case STATE.Fixing:
+				let needFix = creep.room.find(FIND_STRUCTURES, {
+					filter: object => object.hits < object.hitsMax
+				}).length > 0;
+				if (creep.store[RESOURCE_ENERGY] == 0 || !needFix) {
+					creep.memory.target = null; // clear target
+					creep.memory.state = STATE.Sourcing;
+					roleBuilder._say(creep); // shout to the GUI
+				}
+
 			case STATE.Building:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
 					creep.memory.target = null; // clear target
 					creep.memory.state = STATE.Sourcing;
+					roleBuilder._say(creep); // shout to the GUI
 				}
 				break;
 
 			// if we don't have a state, set it to Sourcing
 			default:
 				creep.memory.state = STATE.Sourcing;
+				roleBuilder._say(creep); // shout to the GUI
 		}
 	},
 

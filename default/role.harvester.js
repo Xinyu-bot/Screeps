@@ -18,9 +18,6 @@ let roleHarvester = {
         // check state
         roleHarvester._state(creep);
 
-        // shout to the GUI
-        roleHarvester._say(creep);
-
 	    // operate
         roleHarvester._operate(creep);
     }, 
@@ -35,18 +32,21 @@ let roleHarvester = {
 			case STATE.Sourcing:
 				if (creep.store.getFreeCapacity() == 0) {
 					creep.memory.state = STATE.Delivering;
+                    roleHarvester._say(creep);  // shout to the GUI
 				}
 				break;
 			
 			case STATE.Delivering:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
 					creep.memory.state = STATE.Sourcing;
+                    roleHarvester._say(creep);  // shout to the GUI
 				}
 				break;
 
 			// if we don't have a state, set it to Sourcing
 			default:
 				creep.memory.state = STATE.Sourcing;
+                roleHarvester._say(creep);  // shout to the GUI
 		}
 	},
 
