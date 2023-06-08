@@ -9,7 +9,7 @@ const rolePrepare = require('role.prepare');
 const ROLE = require('./role.const');
 let { SourceMap } = require('./role.prepare');
 
-const spawnCommand = require('spawnCommand');
+const spawnCommand = require('spawn.command');
 
 
 module.exports.loop = function () {

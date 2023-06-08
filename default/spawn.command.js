@@ -1,5 +1,17 @@
 const ROLE = require("./role.const");
 
+const MinEnergyForSpawn = 200;
+const ModuleCost = {
+    [MOVE]: 50,
+    [WORK]: 100,
+    [CARRY]: 50,
+    [ATTACK]: 80,
+    [RANGED_ATTACK]: 150,
+    [HEAL]: 250,
+    [CLAIM]: 600,
+    [TOUGH]: 10,
+}
+
 let spawnCommand = {
     
     /** 
@@ -10,6 +22,7 @@ let spawnCommand = {
     spawn: function (screepsMap) {
         for (let spawnName in Game.spawns) {
             let spawn = Game.spawns[spawnName];
+            if (spawn.spawning) continue;
             spawnCommand._spawnCreep(spawn, screepsMap);
         }
     },
@@ -22,7 +35,8 @@ let spawnCommand = {
      */
     _spawnCreep: function (spawn, screepsMap) {
         let energy = spawn.room.energyAvailable;
-        if (energy < 300) return;
+        console.log("energy: " + energy);
+        if (energy < MinEnergyForSpawn) return;
         
         let harvesters = screepsMap.get(ROLE.HARVESTER);
         let upgraders = screepsMap.get(ROLE.UPGRADER);
@@ -34,7 +48,7 @@ let spawnCommand = {
         else if (upgraders.length < 4) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 6) {
+        else if (builders.length < 4) {
             spawnCommand._spawnBuilder(spawn);
         }
     },
@@ -46,17 +60,25 @@ let spawnCommand = {
      */
     _spawnHarvester: function (spawn) {
         let energy = spawn.room.energyAvailable;
-        if (energy < 300) return;
+        let baseBody = [WORK, CARRY, MOVE];
+        let baseCost = 0;
+        baseBody.forEach((part) => baseCost += ModuleCost[part])
+        let times = Math.floor(energy / baseCost);
+        let body = [];
+        for (let i = 0; i < times; i++) {
+            body = body.concat(baseBody);
+        }
 
         let _name = ROLE.HARVESTER + Game.time;
-        let body = [WORK, CARRY, MOVE];
         let role = ROLE.HARVESTER;
         let memory = { 
             role: role,
             spawn: spawn.name,
         };
 
-        _name = spawn.spawnCreep(body, _name, { memory: memory });
+        if (body.length >= 3) {
+            _name = spawn.spawnCreep(body, _name, { memory: memory });
+        }
     },
 
     /**
@@ -66,17 +88,25 @@ let spawnCommand = {
      */
     _spawnUpgrader: function (spawn) {
         let energy = spawn.room.energyAvailable;
-        if (energy < 300) return;
+        let baseBody = [WORK, CARRY, MOVE];
+        let baseCost = 0;
+        baseBody.forEach((part) => baseCost += ModuleCost[part])
+        let times = Math.floor(energy / baseCost);
+        let body = [];
+        for (let i = 0; i < times; i++) {
+            body = body.concat(baseBody);
+        } 
 
         let _name = ROLE.UPGRADER + Game.time;
-        let body = [WORK, CARRY, MOVE];
         let role = ROLE.UPGRADER;
         let memory = {
             role: role,
             spawn: spawn.name,
         };
-
-        _name = spawn.spawnCreep(body, _name, { memory: memory });
+        
+        if (body.length >= 3) {
+            _name = spawn.spawnCreep(body, _name, { memory: memory });
+        }
     },
 
     /**
@@ -86,17 +116,25 @@ let spawnCommand = {
      */
     _spawnBuilder: function (spawn) {
         let energy = spawn.room.energyAvailable;
-        if (energy < 300) return;
+        let baseBody = [WORK, CARRY, MOVE];
+        let baseCost = 0;
+        baseBody.forEach((part) => baseCost += ModuleCost[part])
+        let times = Math.floor(energy / baseCost);
+        let body = [];
+        for (let i = 0; i < times; i++) {
+            body = body.concat(baseBody);
+        }
 
         let _name = ROLE.BUILDER + Game.time;
-        let body = [WORK, CARRY, MOVE];
         let role = ROLE.BUILDER;
         let memory = {
             role: role,
             spawn: spawn.name,
         };
 
-        _name = spawn.spawnCreep(body, _name, { memory: memory });
+        if (body.length >= 3) {
+            _name = spawn.spawnCreep(body, _name, { memory: memory });
+        }
     },
 
 };
