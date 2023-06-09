@@ -1,5 +1,5 @@
-const ROLE = require("./role.const");
-const roleUtils = require("./role.utils");
+const ROLE = require("./role.const")
+const roleUtils = require("./role.utils")
 
 const STATE = {
 	Sourcing: 1,
@@ -14,10 +14,10 @@ let roleCarrier = {
 	 */    
     run: function(creep) {
         // check state
-        roleCarrier._state(creep);
+        roleCarrier._state(creep)
 
 	    // operate
-        roleCarrier._operate(creep);
+        roleCarrier._operate(creep)
     }, 
 
 	/**
@@ -28,22 +28,22 @@ let roleCarrier = {
 			case STATE.Sourcing:
 				if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                     creep.memory.target = null; // clear target
-					creep.memory.state = STATE.Storing;
+					creep.memory.state = STATE.Storing
                     roleCarrier._say(creep);  // shout to the GUI
 				}
-				break;
+				break
 			
 			case STATE.Storing:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
                     creep.memory.target = null; // clear target
-					creep.memory.state = STATE.Sourcing;
+					creep.memory.state = STATE.Sourcing
                     roleCarrier._say(creep);  // shout to the GUI
 				}
-				break;
+				break
 
 			// if we don't have a state, set it to Sourcing
 			default:
-				creep.memory.state = STATE.Sourcing;
+				creep.memory.state = STATE.Sourcing
                 roleCarrier._say(creep);  // shout to the GUI
 		}
 	},
@@ -54,15 +54,15 @@ let roleCarrier = {
     _say: function(creep) {
         switch (creep.memory.state) {
             case STATE.Sourcing:
-                creep.say(ROLE.SAY.SOURCE);
-                break;
+                creep.say(ROLE.SAY.SOURCE)
+                break
 
             case STATE.Storing:
-                creep.say(ROLE.SAY.DELIVER);
-                break;
+                creep.say(ROLE.SAY.DELIVER)
+                break
             
             default:
-                creep.say(ROLE.SAY.WONDER);
+                creep.say(ROLE.SAY.WONDER)
         }
     },
 
@@ -74,36 +74,36 @@ let roleCarrier = {
             // find a container near a source, and withdraw energy from it
             case STATE.Sourcing:
                 if (creep.memory.target) {
-                    let target = Game.getObjectById(creep.memory.target);
+                    let target = Game.getObjectById(creep.memory.target)
                     if (target && target.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
-                        creep.memory.target = null;
+                        creep.memory.target = null
                     } else {
                         if(creep.withdraw(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}});
+                            creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}})
                         }
-                        break;
+                        break
                     }
                 }
 
-                const targetSources = roleUtils.findSourceContainers(creep);
+                const targetSources = roleUtils.findSourceContainers(creep)
                 if (targetSources) {
-                    creep.memory.target = targetSources[0].id;
+                    creep.memory.target = targetSources[0].id
                     if(creep.withdraw(targetSources[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetSources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                        creep.moveTo(targetSources[0], {visualizePathStyle: {stroke: '#ffaa00'}})
                     }
                 }
-                break;
+                break
 
             case STATE.Storing:
                 if (creep.memory.target) {
-                    let target = Game.getObjectById(creep.memory.target);
+                    let target = Game.getObjectById(creep.memory.target)
                     if (target && target.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
-                        creep.memory.target = null;
+                        creep.memory.target = null
                     } else {
                         if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}});
+                            creep.moveTo(target, {visualizePathStyle: {stroke: '#ffaa00'}})
                         }
-                        break;
+                        break
                     }
                 }
 
@@ -112,35 +112,35 @@ let roleCarrier = {
                 // go to extension
                 const extension = creep.pos.findClosestByRange(FIND_STRUCTURES, 
                     {filter: (structure) => {
-                        return structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        return structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
                     }}
-                );
+                )
                 if (extension) {
-                    creep.memory.target = extension.id;
+                    creep.memory.target = extension.id
                     if(creep.transfer(extension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(extension, {visualizePathStyle: {stroke: '#ffaa00'}});
+                        creep.moveTo(extension, {visualizePathStyle: {stroke: '#ffaa00'}})
                     }
-                    break;
+                    break
                 }
 
                 // go to spawn                
                 if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                    creep.memory.target = spawn.id;
+                    creep.memory.target = spawn.id
                     if(creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
+                        creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}})
                     }
-                    break;
+                    break
                 }
 
                 // go to storage
                 // should be the end of the chain in most cases
-                const targetStorage = spawn.room.storage;
+                const targetStorage = spawn.room.storage
                 if (targetStorage && targetStorage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                    creep.memory.target = targetStorage.id;
+                    creep.memory.target = targetStorage.id
                     if(creep.transfer(targetStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetStorage, {visualizePathStyle: {stroke: '#ffaa00'}});
+                        creep.moveTo(targetStorage, {visualizePathStyle: {stroke: '#ffaa00'}})
                     }
-                    break;
+                    break
                 }
 
                 // go to tower
@@ -148,35 +148,35 @@ let roleCarrier = {
                     filter: (structure) => { 
                         return structure.structureType == STRUCTURE_TOWER; 
                     }
-                });
+                })
                 if (towers.length > 0) {
                     // find the tower with lowest energy charged
                     towers.sort((a, b) => b.store.getFreeCapacity(RESOURCE_ENERGY) - a.store.getFreeCapacity(RESOURCE_ENERGY))
                     if (towers[0].store.getFreeCapacity(RESOURCE_ENERGY) > towers[0].store.getCapacity(RESOURCE_ENERGY) * 0.2) {
-                        creep.memory.target = towers[0].id;
+                        creep.memory.target = towers[0].id
                         if(creep.transfer(towers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                            creep.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffaa00'}})
                         }
-                        break;
+                        break
                     }
                 }
 
                 // go to container
-                const targetContainers = roleUtils.findControllerContainers(creep);
+                const targetContainers = roleUtils.findControllerContainers(creep)
                 if (targetContainers && targetContainers[0].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                    creep.memory.target = targetContainers[0].id;
+                    creep.memory.target = targetContainers[0].id
                     if(creep.transfer(targetContainers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetContainers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                        creep.moveTo(targetContainers[0], {visualizePathStyle: {stroke: '#ffaa00'}})
                     }
-                    break;
+                    break
                 }
 
-                break;
+                break
 
             default:
         }
     },
 
-};
+}
 
 module.exports = roleCarrier;

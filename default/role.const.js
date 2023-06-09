@@ -4,6 +4,7 @@ const ROLE = {
     BUILDER: 'builder',
     CARRIER: 'carrier',
     DISTRIBUTOR: 'distributor',
+    OUTSIDE_HARVESTER: 'outsideHarvester',
 
     SAY: {
         HARVEST: '🌾 harvest',
