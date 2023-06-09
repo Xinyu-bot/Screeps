@@ -30,10 +30,18 @@ let roleBuilder = {
 				if (creep.store.getFreeCapacity() == 0) {
 					// if we have less than 2 fixers, we should fix first
 					let fixers = _.filter(Game.creeps, (creep) => creep.memory.role == ROLE.BUILDER && creep.memory.state == STATE.Fixing);
+					
 					let needFix = creep.room.find(FIND_STRUCTURES, {
 						filter: object => object.hits < object.hitsMax
 					}).length > 0;
-					creep.memory.state = fixers.length < MinFixers && needFix ? STATE.Fixing : STATE.Building;
+					
+					let hasTower = creep.room.find(FIND_MY_STRUCTURES, {
+						filter: object => {
+							return object.structureType == STRUCTURE_TOWER && object.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+						}
+					}).length > 0;
+					
+					creep.memory.state = (fixers.length < MinFixers && needFix && !hasTower) ? STATE.Fixing : STATE.Building ;
 					roleBuilder._say(creep); // shout to the GUI
 				}
 				break;
@@ -93,6 +101,17 @@ let roleBuilder = {
     _operate: function(creep) {
 		switch (creep.memory.state) {
 			case STATE.Sourcing:
+				// source from container
+				let containers = roleUtils.findSourceContainers(creep);
+				if (containers) {
+					containers.sort((a, b) => b.store.getUsedCapacity(RESOURCE_ENERGY) - a.store.getUsedCapacity(RESOURCE_ENERGY)); // sort by used capacity in descending order, so we can find the one with the most used capacity
+					if(creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+						creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+					}
+					break;
+				}
+
+				// source from source
 				let source = roleUtils.findSource(creep);
 				if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
 					creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});

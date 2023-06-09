@@ -60,16 +60,16 @@ let spawnCommand = {
             console.log("Spawn: " + spawn.name + ", harvesters: " + harvesters.length + ", upgraders: " + upgraders.length + ", builders: " + builders.length + ", carriers: " + carrier.length);
         }
 
-        if (harvesters.length < 3) {
+        if (harvesters.length < 4) {
             spawnCommand._spawnHarvester(spawn);
         }
         else if (upgraders.length < 4) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 3) {
+        else if (builders.length < 1) {
             spawnCommand._spawnBuilder(spawn);
         }
-        else if (carrier.length < 2) {
+        else if (carrier.length < 3) {
             spawnCommand._spawnCarrier(spawn);
         }
     },
@@ -165,7 +165,7 @@ let spawnCommand = {
      */
     _spawnCarrier: function (spawn) {
         let energy = spawn.room.energyAvailable;
-        let baseBody = [CARRY, MOVE];
+        let baseBody = [CARRY, CARRY, MOVE];
         let baseCost = 0;
         baseBody.forEach((part) => baseCost += ModuleCost[part])
         let times = Math.floor(energy / baseCost);

@@ -2,6 +2,8 @@ const _ = require('lodash');
 
 const clearMemory = require('clearMemory');
 
+const towerBasic = require('tower.basic');
+
 const roleHarvester = require('role.harvester');
 const roleUpgrader = require('role.upgrader');
 const roleBuilder = require('role.builder');
@@ -15,6 +17,9 @@ const spawnCommand = require('spawn.command');
 module.exports.loop = function () {
     // clear memory
     clearMemory.run();
+
+    // tower
+    towerBasic.run();
 
     // prepare
     rolePrepare.prepare(Game.creeps);

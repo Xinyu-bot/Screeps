@@ -10,7 +10,7 @@ var rolePrepare = {
     }, 
 
     /**
-     * @ param {} creeps
+     * @param {} creeps
      */
     _prepareSourceMap: function(creeps) {
         if (this.SourceMap.size > 0) this.SourceMap.clear();

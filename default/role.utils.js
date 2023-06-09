@@ -30,8 +30,8 @@ let roleUtils = {
             }
 
             // pick the source with the least number of harvesters
-            let source_0 = sourcesMap.get(sources[0].id) ? sourcesMap.get(sources[0].id) : 0;
-            let source_1 = sourcesMap.get(sources[1].id) ? sourcesMap.get(sources[1].id) : 0;
+            let source_0 = sourcesMap.has(sources[0].id) ? sourcesMap.get(sources[0].id) : 0;
+            let source_1 = sourcesMap.has(sources[1].id) ? sourcesMap.get(sources[1].id) : 0;
             if (source_0 <= source_1) {
                 sourceId = sources[0].id;
                 sourcesMap.set(sourceId, source_0 + 1);
@@ -59,7 +59,7 @@ let roleUtils = {
      *  
      * Find the containers near the sources
      */
-    findSourceContainer: function(creep) {
+    findSourceContainers: function(creep) {
         let sources = creep.room.find(FIND_SOURCES);
         let containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
@@ -73,7 +73,7 @@ let roleUtils = {
         containers.sort((a, b) => b.store.getUsedCapacity(RESOURCE_ENERGY) - a.store.getUsedCapacity(RESOURCE_ENERGY)); 
 
         if (containers.length > 0) {
-            return containers[0];
+            return containers;
         } else {
             return null;
         }
@@ -86,10 +86,10 @@ let roleUtils = {
      *  
      * Find the containers near the controllers
      */
-    findControllerContainer: function(creep) {
+    findControllerContainers: function(creep) {
         let containers = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
-                return structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(creep.room.controller, 3) && structure.store.getFreeCapacity() > 0;
+                return structure.structureType == STRUCTURE_CONTAINER && structure.pos.inRangeTo(creep.room.controller, 3);
             }
         });
 
@@ -97,7 +97,7 @@ let roleUtils = {
         containers.sort((a, b) => b.store.getFreeCapacity(RESOURCE_ENERGY) - a.store.getFreeCapacity(RESOURCE_ENERGY)); 
 
         if (containers.length > 0) {
-            return containers[0];
+            return containers;
         } else {
             return null;
         }

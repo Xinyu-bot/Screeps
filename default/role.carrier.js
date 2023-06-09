@@ -4,6 +4,7 @@ const roleUtils = require("./role.utils");
 const STATE = {
 	Sourcing: 1,
     Storing: 2,
+    Delivering: 3,
 }
 
 
@@ -26,7 +27,7 @@ let roleCarrier = {
 	_state: function(creep) {
 		switch (creep.memory.state) {
 			case STATE.Sourcing:
-				if (creep.store.getFreeCapacity() == 0) {
+				if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                     creep.memory.target = null; // clear target
 					creep.memory.state = STATE.Storing;
                     roleCarrier._say(creep);  // shout to the GUI
@@ -85,16 +86,15 @@ let roleCarrier = {
                     }
                 }
 
-                const targetSource = roleUtils.findSourceContainer(creep);
-                if (targetSource) {
-                    creep.memory.target = targetSource.id;
-                    if(creep.withdraw(targetSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetSource, {visualizePathStyle: {stroke: '#ffaa00'}});
+                const targetSources = roleUtils.findSourceContainers(creep);
+                if (targetSources) {
+                    creep.memory.target = targetSources[0].id;
+                    if(creep.withdraw(targetSources[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targetSources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
                     }
                 }
                 break;
 
-            // find a container near a controller, and transfer energy to it
             case STATE.Storing:
                 if (creep.memory.target) {
                     let target = Game.getObjectById(creep.memory.target);
@@ -127,30 +127,34 @@ let roleCarrier = {
                 });
                 if (towers.length > 0) {
                     // find the tower with lowest energy charged
-                    towers.sort((a, b) => b.store.getFreeCapacity() - a.store.getFreeCapacity())
-                    creep.memory.target = towers[0].id;
-                    if(creep.transfer(towers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                    towers.sort((a, b) => b.store.getFreeCapacity(RESOURCE_ENERGY) - a.store.getFreeCapacity(RESOURCE_ENERGY))
+                    if (towers[0].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                        creep.memory.target = towers[0].id;
+                        if(creep.transfer(towers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                            creep.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                        }
+                        break;
+                    }
+                }
+
+                // go to spawn                
+                if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    creep.memory.target = spawn.id;
+                    if(creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
                     }
                     break;
                 }
 
                 // go to container
-                const targetContainer = roleUtils.findControllerContainer(creep);
-                if (targetContainer) {
-                    creep.memory.target = targetContainer.id;
-                    if(creep.transfer(targetContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetContainer, {visualizePathStyle: {stroke: '#ffaa00'}});
+                const targetContainers = roleUtils.findControllerContainers(creep);
+                if (targetContainers && targetContainers[0].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    creep.memory.target = targetContainers[0].id;
+                    if(creep.transfer(targetContainers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targetContainers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
                     }
                     break;
                 }
-
-                // go to spawn                
-                creep.memory.target = spawn.id;
-                if(creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
-                }
-                
 
                 break;
 

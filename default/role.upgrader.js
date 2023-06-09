@@ -70,6 +70,15 @@ let roleUpgrader = {
     _operate: function(creep) {
         switch (creep.memory.state) {
             case STATE.Sourcing:
+                let containers = roleUtils.findControllerContainers(creep);
+                containers.sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY));
+                if (containers) {
+                    if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                    }
+                    break;
+                }
+
                 let source = roleUtils.findSource(creep);
                 if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
