@@ -9,7 +9,7 @@ let roleUtils = {
 	 */
     findSource: function(creep) {
         // if we already have a source, use it
-        if (creep.memory.sourceId != null && creep.memory.sourceId != undefined) {
+        if (creep.memory.sourceId) {
             return Game.getObjectById(creep.memory.sourceId);
         }
 
@@ -19,7 +19,7 @@ let roleUtils = {
         let sourceId = "";
         // if we have more than one source, we may need to pick one
         if (sources.length > 1) {
-            
+
             // fix the map
             if (sourcesMap.size != sources.length) {
                 if (sourcesMap.has(sources[0].id)) {

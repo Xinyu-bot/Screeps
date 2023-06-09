@@ -37,7 +37,7 @@ var towerBasic = {
         if (!target) {
             target = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.hits < structure.hitsMax && structure.hits < 1000 && structure.structureType == STRUCTURE_WALL;
+                    return structure.hits < structure.hitsMax && structure.hits < 10000 && structure.structureType == STRUCTURE_WALL;
                 }
             });
         }
@@ -46,7 +46,7 @@ var towerBasic = {
         if (!target) {
             target = tower.pos.findClosestByRange(FIND_STRUCTURES, {
                 filter: (structure) => {
-                    return structure.hits < structure.hitsMax && structure.hits < 1000 && structure.structureType == STRUCTURE_RAMPART;
+                    return structure.hits < structure.hitsMax && structure.hits < 10000 && structure.structureType == STRUCTURE_RAMPART;
                 }
             });
         }

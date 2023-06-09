@@ -13,7 +13,9 @@ var rolePrepare = {
      * @param {} creeps
      */
     _prepareSourceMap: function(creeps) {
-        if (this.SourceMap.size > 0) this.SourceMap.clear();
+        for (let key of this.SourceMap.keys()) {
+            this.SourceMap.set(key, 0);
+        }
         
         for (let name in creeps) {
             let creep = Game.creeps[name];
