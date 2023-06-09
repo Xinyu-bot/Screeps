@@ -77,27 +77,27 @@ let roleHarvester = {
                 break;
 
             case STATE.Delivering:
-                // find an extension
+                // find a container
                 let target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                     filter: (structure) => {
-                        return structure.structureType == STRUCTURE_EXTENSION &&
-                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                        return (structure.structureType == STRUCTURE_CONTAINER) && 
+                            structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
+                            // make sure the container is close to a source, not the controller
+                            structure.pos.findInRange(FIND_SOURCES, 3).length > 0;
                     }
                 });
 
-                // if we can't find an extension or spawn, try to find a container
+                // find an extension
                 if (!target) {
                     target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {
-                            return (structure.structureType == STRUCTURE_CONTAINER) && 
-                                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
-                                // make sure the container is close to a source, not the controller
-                                structure.pos.findInRange(FIND_SOURCES, 3).length > 0;
+                            return structure.structureType == STRUCTURE_EXTENSION &&
+                                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                         }
                     });
                 }
 
-                // if we can't find a container, try to find a spawn
+                // find a spawn
                 if (!target) {
                     target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
                         filter: (structure) => {

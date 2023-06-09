@@ -9,7 +9,34 @@ let roleUtils = {
 	 */
     findSource: function(creep) {
         // if we already have a source, use it
-        if (creep.memory.sourceId) {
+        if (creep.memory.sourceId != null && creep.memory.sourceId != undefined) {
+            // check if the source still has energy, if yes, use it
+            let source = Game.getObjectById(creep.memory.sourceId);
+            if (source.energy > 0) {
+                return source;
+            }
+
+            // check if need rebalance the source map
+            if (SourceMap.size > 1) {
+                let currentSourceId = creep.memory.sourceId;
+                let _this, _that = 0;
+                let _thisKey, _thatKey = "";
+                for (let key of SourceMap.keys()) {
+                    if (key == currentSourceId) {
+                        _this = SourceMap.get(key);
+                        _thisKey = key;
+                    } else {
+                        _that = SourceMap.get(key);
+                        _thatKey = key;
+                    }
+                }
+                if (_this > _that) {
+                    SourceMap.set(currentSourceId, _this - 1);
+                    SourceMap.set(_thatKey, _that + 1);
+                    creep.memory.sourceId = _thatKey;
+                }
+            }
+
             return Game.getObjectById(creep.memory.sourceId);
         }
 
@@ -22,10 +49,11 @@ let roleUtils = {
 
             // fix the map
             if (sourcesMap.size != sources.length) {
-                if (sourcesMap.has(sources[0].id)) {
-                    sourcesMap.set(sources[1].id, 0);
-                } else {
+                if (!sourcesMap.has(sources[0].id)) {
                     sourcesMap.set(sources[0].id, 0);
+                } 
+                if (!sourcesMap.has(sources[1].id)) {
+                    sourcesMap.set(sources[1].id, 0);
                 }
             }
 

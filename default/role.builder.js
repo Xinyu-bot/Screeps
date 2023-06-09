@@ -37,7 +37,7 @@ let roleBuilder = {
 					
 					let hasTower = creep.room.find(FIND_MY_STRUCTURES, {
 						filter: object => {
-							return object.structureType == STRUCTURE_TOWER && object.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+							return object.structureType == STRUCTURE_TOWER && object.store.getUsedCapacity(RESOURCE_ENERGY) > 0;
 						}
 					}).length > 0;
 					

@@ -128,13 +128,27 @@ let roleCarrier = {
                 if (towers.length > 0) {
                     // find the tower with lowest energy charged
                     towers.sort((a, b) => b.store.getFreeCapacity(RESOURCE_ENERGY) - a.store.getFreeCapacity(RESOURCE_ENERGY))
-                    if (towers[0].store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
+                    if (towers[0].store.getFreeCapacity(RESOURCE_ENERGY) > towers[0].store.getCapacity(RESOURCE_ENERGY) * 0.2) {
                         creep.memory.target = towers[0].id;
                         if(creep.transfer(towers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                             creep.moveTo(towers[0], {visualizePathStyle: {stroke: '#ffaa00'}});
                         }
                         break;
                     }
+                }
+
+                // go to extension
+                const extension = creep.pos.findClosestByRange(FIND_STRUCTURES, 
+                    {filter: (structure) => {
+                        return structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                    }}
+                );
+                if (extension) {
+                    creep.memory.target = extension.id;
+                    if(creep.transfer(extension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(extension, {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                    break;
                 }
 
                 // go to spawn                

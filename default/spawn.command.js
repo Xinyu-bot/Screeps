@@ -1,6 +1,6 @@
 const ROLE = require("./role.const");
 
-const MinEnergyForSpawn = 200;
+const MinEnergyForSpawn = 300;
 const ModuleCost = {
     [MOVE]: 50,
     [WORK]: 100,
@@ -63,10 +63,10 @@ let spawnCommand = {
         if (harvesters.length < 4) {
             spawnCommand._spawnHarvester(spawn);
         }
-        else if (upgraders.length < 4) {
+        else if (upgraders.length < 3) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 1) {
+        else if (builders.length < 2) {
             spawnCommand._spawnBuilder(spawn);
         }
         else if (carrier.length < 3) {
@@ -81,7 +81,7 @@ let spawnCommand = {
      */
     _spawnHarvester: function (spawn) {
         let energy = spawn.room.energyAvailable;
-        let baseBody = [WORK, CARRY, MOVE];
+        let baseBody = [WORK, WORK, CARRY, MOVE];
         let baseCost = 0;
         baseBody.forEach((part) => baseCost += ModuleCost[part])
         let times = Math.floor(energy / baseCost);
@@ -109,7 +109,7 @@ let spawnCommand = {
      */
     _spawnUpgrader: function (spawn) {
         let energy = spawn.room.energyAvailable;
-        let baseBody = [WORK, CARRY, MOVE];
+        let baseBody = [WORK, WORK, CARRY, MOVE];
         let baseCost = 0;
         baseBody.forEach((part) => baseCost += ModuleCost[part])
         let times = Math.floor(energy / baseCost);
