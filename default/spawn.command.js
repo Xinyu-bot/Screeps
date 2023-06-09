@@ -48,30 +48,40 @@ let spawnCommand = {
         let upgraders = screepsMap.get(ROLE.UPGRADER);
         let builders = screepsMap.get(ROLE.BUILDER);
         let carrier = screepsMap.get(ROLE.CARRIER);
+        let distributor = screepsMap.get(ROLE.DISTRIBUTOR);
 
         // filter out the creep that does not belong to this spawn
         harvesters = _.filter(harvesters, (creep) => creep.memory.spawn == spawn.name);
         upgraders = _.filter(upgraders, (creep) => creep.memory.spawn == spawn.name);
         builders = _.filter(builders, (creep) => creep.memory.spawn == spawn.name);
         carrier = _.filter(carrier, (creep) => creep.memory.spawn == spawn.name);
+        distributor = _.filter(distributor, (creep) => creep.memory.spawn == spawn.name);
 
         // log the number of creeps for each role every 5 ticks
         if (Game.time % 5 == 0) {
-            console.log("Spawn: " + spawn.name + ", harvesters: " + harvesters.length + ", upgraders: " + upgraders.length + ", builders: " + builders.length + ", carriers: " + carrier.length);
+            console.log(
+                "Spawn: " + spawn.name + ", harvesters: " + harvesters.length + ", upgraders: " + 
+                upgraders.length + ", builders: " + builders.length + ", carriers: " + 
+                carrier.length + ", distributors: " + distributor.length
+            );
         }
 
         if (harvesters.length < 4) {
             spawnCommand._spawnHarvester(spawn);
         }
-        else if (upgraders.length < 3) {
+        else if (upgraders.length < 2) {
             spawnCommand._spawnUpgrader(spawn);            
         }
-        else if (builders.length < 2) {
+        else if (builders.length < 1) {
             spawnCommand._spawnBuilder(spawn);
         }
-        else if (carrier.length < 3) {
+        else if (carrier.length < 2) {
             spawnCommand._spawnCarrier(spawn);
+        } 
+        else if (distributor.length < 1) {
+            spawnCommand._spawnDistributor(spawn);
         }
+
     },
 
     /**
@@ -181,7 +191,35 @@ let spawnCommand = {
             spawn: spawn.name,
         };
 
-        if (body.length >= 2) {
+        if (body.length >= 3) {
+            _name = spawn.spawnCreep(body, _name, { memory: memory });
+        }
+    },
+
+        /**
+     * @param {StructureSpawn} spawn 
+     * 
+     * Spawn distributor
+     */
+    _spawnDistributor: function (spawn) {
+        let energy = spawn.room.energyAvailable;
+        let baseBody = [CARRY, CARRY, MOVE];
+        let baseCost = 0;
+        baseBody.forEach((part) => baseCost += ModuleCost[part])
+        let times = Math.floor(energy / baseCost);
+        let body = [];
+        for (let i = 0; i < times; i++) {
+            body = body.concat(baseBody);
+        }
+
+        let _name = ROLE.DISTRIBUTOR + Game.time;
+        let role = ROLE.DISTRIBUTOR;
+        let memory = {
+            role: role,
+            spawn: spawn.name,
+        };
+
+        if (body.length >= 3) {
             _name = spawn.spawnCreep(body, _name, { memory: memory });
         }
     },

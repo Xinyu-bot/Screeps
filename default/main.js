@@ -9,6 +9,7 @@ const roleUpgrader = require('role.upgrader');
 const roleBuilder = require('role.builder');
 const rolePrepare = require('role.prepare');
 const roleCarrier = require('role.carrier');
+const roleDistributor = require('role.distributor');
 const ROLE = require('./role.const');
 
 const spawnCommand = require('spawn.command');
@@ -29,11 +30,13 @@ module.exports.loop = function () {
     let upgraders = _.filter(Game.creeps, (creep) => creep.memory.role == ROLE.UPGRADER);
     let builders = _.filter(Game.creeps, (creep) => creep.memory.role == ROLE.BUILDER);
     let carriers = _.filter(Game.creeps, (creep) => creep.memory.role == ROLE.CARRIER);
+    let distributor = _.filter(Game.creeps, (creep) => creep.memory.role == ROLE.DISTRIBUTOR);
     
     harvesters.forEach(roleHarvester.run);
     upgraders.forEach(roleUpgrader.run);
     builders.forEach(roleBuilder.run);
     carriers.forEach(roleCarrier.run);
+    distributor.forEach(roleDistributor.run);
 
     // spawn operation
     let map = new Map();
@@ -41,6 +44,7 @@ module.exports.loop = function () {
     map.set(ROLE.UPGRADER, upgraders);
     map.set(ROLE.BUILDER, builders);
     map.set(ROLE.CARRIER, carriers);
+    map.set(ROLE.DISTRIBUTOR, distributor);
     spawnCommand.spawn(map);
     
 }

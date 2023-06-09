@@ -3,6 +3,7 @@ const ROLE = {
     UPGRADER: 'upgrader',
     BUILDER: 'builder',
     CARRIER: 'carrier',
+    DISTRIBUTOR: 'distributor',
 
     SAY: {
         HARVEST: '🌾 harvest',

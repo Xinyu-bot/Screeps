@@ -71,8 +71,8 @@ let roleUpgrader = {
         switch (creep.memory.state) {
             case STATE.Sourcing:
                 let containers = roleUtils.findControllerContainers(creep);
-                containers.sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY));
                 if (containers) {
+                    containers.sort((a, b) => a.store.getFreeCapacity(RESOURCE_ENERGY) - b.store.getFreeCapacity(RESOURCE_ENERGY));
                     if (creep.withdraw(containers[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(containers[0], {visualizePathStyle: {stroke: '#ffffff'}});
                     }

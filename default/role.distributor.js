@@ -3,21 +3,21 @@ const roleUtils = require("./role.utils");
 
 const STATE = {
 	Sourcing: 1,
-    Storing: 2,
+    Distributing: 2,
 }
 
 
-let roleCarrier = {
+let roleDistributor = {
 
     /** 
 	 * @param {Creep} creep 
 	 */    
     run: function(creep) {
         // check state
-        roleCarrier._state(creep);
+        roleDistributor._state(creep);
 
 	    // operate
-        roleCarrier._operate(creep);
+        roleDistributor._operate(creep);
     }, 
 
 	/**
@@ -28,23 +28,23 @@ let roleCarrier = {
 			case STATE.Sourcing:
 				if (creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
                     creep.memory.target = null; // clear target
-					creep.memory.state = STATE.Storing;
-                    roleCarrier._say(creep);  // shout to the GUI
+					creep.memory.state = STATE.Distributing;
+                    roleDistributor._say(creep);  // shout to the GUI
 				}
 				break;
 			
-			case STATE.Storing:
+			case STATE.Distributing:
 				if (creep.store[RESOURCE_ENERGY] == 0) {
                     creep.memory.target = null; // clear target
 					creep.memory.state = STATE.Sourcing;
-                    roleCarrier._say(creep);  // shout to the GUI
+                    roleDistributor._say(creep);  // shout to the GUI
 				}
 				break;
 
 			// if we don't have a state, set it to Sourcing
 			default:
 				creep.memory.state = STATE.Sourcing;
-                roleCarrier._say(creep);  // shout to the GUI
+                roleDistributor._say(creep);  // shout to the GUI
 		}
 	},
 
@@ -57,7 +57,7 @@ let roleCarrier = {
                 creep.say(ROLE.SAY.SOURCE);
                 break;
 
-            case STATE.Storing:
+            case STATE.Distributing:
                 creep.say(ROLE.SAY.DELIVER);
                 break;
             
@@ -85,16 +85,28 @@ let roleCarrier = {
                     }
                 }
 
-                const targetSources = roleUtils.findSourceContainers(creep);
-                if (targetSources) {
-                    creep.memory.target = targetSources[0].id;
-                    if(creep.withdraw(targetSources[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetSources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+                // source from storage
+                // this should be the end of the logic chain for most of the time
+                const targetSourceStorage = creep.room.storage;
+                if (targetSourceStorage && targetSourceStorage.store.getUsedCapacity(RESOURCE_ENERGY) > 0) {
+                    creep.memory.target = targetSourceStorage.id;
+                    if(creep.withdraw(targetSourceStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targetSourceStorage, {visualizePathStyle: {stroke: '#ffaa00'}});
+                    }
+                    break;
+                }
+
+                const targetSourceContainer = roleUtils.findSourceContainers(creep);
+                if (targetSourceContainer) {
+                    creep.memory.target = targetSourceContainer[0].id;
+                    if(creep.withdraw(targetSourceContainer[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(targetSourceContainer[0], {visualizePathStyle: {stroke: '#ffaa00'}});
                     }
                 }
+
                 break;
 
-            case STATE.Storing:
+            case STATE.Distributing:
                 if (creep.memory.target) {
                     let target = Game.getObjectById(creep.memory.target);
                     if (target && target.store.getFreeCapacity(RESOURCE_ENERGY) == 0) {
@@ -109,36 +121,11 @@ let roleCarrier = {
 
                 const spawn = Game.spawns[creep.memory.spawn]; 
 
-                // go to extension
-                const extension = creep.pos.findClosestByRange(FIND_STRUCTURES, 
-                    {filter: (structure) => {
-                        return structure.structureType == STRUCTURE_EXTENSION && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-                    }}
-                );
-                if (extension) {
-                    creep.memory.target = extension.id;
-                    if(creep.transfer(extension, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(extension, {visualizePathStyle: {stroke: '#ffaa00'}});
-                    }
-                    break;
-                }
-
                 // go to spawn                
                 if (spawn.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
                     creep.memory.target = spawn.id;
                     if(creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                         creep.moveTo(spawn, {visualizePathStyle: {stroke: '#ffaa00'}});
-                    }
-                    break;
-                }
-
-                // go to storage
-                // should be the end of the chain in most cases
-                const targetStorage = spawn.room.storage;
-                if (targetStorage && targetStorage.store.getFreeCapacity(RESOURCE_ENERGY) > 0) {
-                    creep.memory.target = targetStorage.id;
-                    if(creep.transfer(targetStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targetStorage, {visualizePathStyle: {stroke: '#ffaa00'}});
                     }
                     break;
                 }
@@ -179,4 +166,4 @@ let roleCarrier = {
 
 };
 
-module.exports = roleCarrier;
+module.exports = roleDistributor;
