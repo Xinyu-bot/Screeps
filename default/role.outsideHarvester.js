@@ -6,7 +6,6 @@ const STATE = {
     Delivering: 2,
 }
 
-
 var roleOutsideHarvester = {
 
     /**
@@ -102,13 +101,14 @@ var roleOutsideHarvester = {
                 for (let flagName in flags) {
                     let flag = flags[flagName]
                     // if the flag is yellow and has a yellow secondary color, it's a source flag for outside harvesters
-                    if (flag.color == COLOR_YELLOW && flag.secondaryColor == COLOR_YELLOW) {
+                    if (flag.color == COLOR_YELLOW && flag.secondaryColor == COLOR_YELLOW && (!flag.memory.creepId || flag.memory.creepId == creep.id) ) {
                         creep.memory.target = flag.name
                         let position = new RoomPosition(flag.pos.x, flag.pos.y, flag.pos.roomName)
                         if (creep.harvest(position) == ERR_NOT_IN_RANGE) {
                             creep.moveTo(position, {visualizePathStyle: {stroke: '#ffaa00'}})
                         }
-                        break
+                        flag.memory.creepId = creep.id
+                        return
                     }
                 }
 

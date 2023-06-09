@@ -59,6 +59,14 @@ let spawnCommand = {
         distributor = _.filter(distributor, (creep) => creep.memory.spawn == spawn.name)
         outsideHarvesters = _.filter(outsideHarvesters, (creep) => creep.memory.spawn == spawn.name)
 
+        let ourHarvestCount = 0
+        for (let flagName in Game.flags) {
+            let flag = Game.flags[flagName]
+            if (flag.color == COLOR_YELLOW && flag.secondaryColor == COLOR_YELLOW) {
+                ourHarvestCount++
+            }
+        }
+
         // log the number of creeps for each role every 5 ticks
         if (Game.time % 5 == 0) {
             console.log(
@@ -84,7 +92,7 @@ let spawnCommand = {
         else if (distributor.length < 1) {
             spawnCommand._spawnDistributor(spawn)
         }
-        else if (outsideHarvesters.length < 1) {
+        else if (outsideHarvesters.length < ourHarvestCount) {
             spawnCommand._spawnOutsideHarvester(spawn)
         }
 
@@ -241,7 +249,7 @@ let spawnCommand = {
         let baseCost = 0
         baseBody.forEach((part) => baseCost += ModuleCost[part])
         // let times = Math.floor(energy / baseCost)
-        let times = 1; // test
+        let times = 2; // test
         let body = []
         for (let i = 0; i < times; i++) {
             body = body.concat(baseBody)

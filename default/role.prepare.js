@@ -1,12 +1,14 @@
 var rolePrepare = {
 
     SourceMap: new Map(),
+    OutHarvestFlagRegistry: new Map(),
 
     /** 
      * @param {} creeps
      */
     prepare: function(creeps) {
         rolePrepare._prepareSourceMap(creeps)
+        rolePrepare._prepareOutHarvestFlagRegistry()
     }, 
 
     /**
@@ -27,7 +29,13 @@ var rolePrepare = {
                 this.SourceMap.set(sourceId, 1)
             }
         }
-    }
+    },
+
+    _prepareOutHarvestFlagRegistry: function() {
+        if (this.OutHarvestFlagRegistry) {
+            this.OutHarvestFlagRegistry.clear()
+        }
+    },
 
 }
 
